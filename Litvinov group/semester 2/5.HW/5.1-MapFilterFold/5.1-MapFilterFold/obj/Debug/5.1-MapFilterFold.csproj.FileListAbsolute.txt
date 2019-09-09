@@ -1,0 +1,7 @@
+C:\GitHub\Homework-2semester\5.1-MapFilterFold\5.1-MapFilterFold\bin\Debug\5.1-MapFilterFold.exe.config
+C:\GitHub\Homework-2semester\5.1-MapFilterFold\5.1-MapFilterFold\bin\Debug\5.1-MapFilterFold.exe
+C:\GitHub\Homework-2semester\5.1-MapFilterFold\5.1-MapFilterFold\bin\Debug\5.1-MapFilterFold.pdb
+C:\GitHub\Homework-2semester\5.1-MapFilterFold\5.1-MapFilterFold\obj\Debug\5.1-MapFilterFold.csprojResolveAssemblyReference.cache
+C:\GitHub\Homework-2semester\5.1-MapFilterFold\5.1-MapFilterFold\obj\Debug\5.1-MapFilterFold.csproj.CoreCompileInputs.cache
+C:\GitHub\Homework-2semester\5.1-MapFilterFold\5.1-MapFilterFold\obj\Debug\5.1-MapFilterFold.exe
+C:\GitHub\Homework-2semester\5.1-MapFilterFold\5.1-MapFilterFold\obj\Debug\5.1-MapFilterFold.pdb

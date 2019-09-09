@@ -1,0 +1,7 @@
+C:\GitHub\Homework-2semester\7.1\7.1\bin\Debug\7.1.exe.config
+C:\GitHub\Homework-2semester\7.1\7.1\bin\Debug\7.1.exe
+C:\GitHub\Homework-2semester\7.1\7.1\bin\Debug\7.1.pdb
+C:\GitHub\Homework-2semester\7.1\7.1\obj\Debug\7.1.csprojResolveAssemblyReference.cache
+C:\GitHub\Homework-2semester\7.1\7.1\obj\Debug\7.1.csproj.CoreCompileInputs.cache
+C:\GitHub\Homework-2semester\7.1\7.1\obj\Debug\7.1.exe
+C:\GitHub\Homework-2semester\7.1\7.1\obj\Debug\7.1.pdb

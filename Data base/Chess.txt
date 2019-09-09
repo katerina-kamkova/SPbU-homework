@@ -1,0 +1,402 @@
+﻿CREATE TABLE chessmen (
+	f_id int PRIMARY KEY CHECK (f_id > 0 AND f_id < 33),
+	f_type char(10) NOT NULL CHECK (f_type IN ('king', 'pawn', 'queen', 'knight', 'rook', 'bishop')),
+	f_colour char NOT NULL CHECK (f_colour IN ('b', 'w')));
+
+CREATE TABLE chessfield (
+	f_id int PRIMARY KEY REFERENCES chessmen (f_id),
+	x char NOT NULL CHECK (x IN ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H')),
+	y int NOT NULL CHECK (y > 0 and y < 9),
+	UNIQUE(x, y));
+
+INSERT INTO chessmen VALUES (1, 'pawn', 'b');
+INSERT INTO chessmen VALUES (2, 'pawn', 'b');
+INSERT INTO chessmen VALUES (3, 'pawn', 'b');
+INSERT INTO chessmen VALUES (4, 'pawn', 'b');
+INSERT INTO chessmen VALUES (5, 'pawn', 'b');
+INSERT INTO chessmen VALUES (6, 'pawn', 'b');
+INSERT INTO chessmen VALUES (7, 'pawn', 'b');
+INSERT INTO chessmen VALUES (8, 'pawn', 'b');
+INSERT INTO chessmen VALUES (9, 'pawn', 'w');
+INSERT INTO chessmen VALUES (10, 'pawn', 'w');
+INSERT INTO chessmen VALUES (11, 'pawn', 'w');
+INSERT INTO chessmen VALUES (12, 'pawn', 'w');
+INSERT INTO chessmen VALUES (13, 'pawn', 'w');
+INSERT INTO chessmen VALUES (14, 'pawn', 'w');
+INSERT INTO chessmen VALUES (15, 'pawn', 'w');
+INSERT INTO chessmen VALUES (16, 'pawn', 'w');
+INSERT INTO chessmen VALUES (17, 'rook', 'b');
+INSERT INTO chessmen VALUES (18, 'rook', 'b');
+INSERT INTO chessmen VALUES (19, 'rook', 'w');
+INSERT INTO chessmen VALUES (20, 'rook', 'w');
+INSERT INTO chessmen VALUES (21, 'knight', 'b');
+INSERT INTO chessmen VALUES (22, 'knight', 'b');
+INSERT INTO chessmen VALUES (23, 'knight', 'w');
+INSERT INTO chessmen VALUES (24, 'knight', 'w');
+INSERT INTO chessmen VALUES (25, 'bishop', 'b');
+INSERT INTO chessmen VALUES (26, 'bishop', 'b');
+INSERT INTO chessmen VALUES (27, 'bishop', 'w');
+INSERT INTO chessmen VALUES (28, 'bishop', 'w');
+INSERT INTO chessmen VALUES (29, 'queen', 'b');
+INSERT INTO chessmen VALUES (30, 'king', 'b');
+INSERT INTO chessmen VALUES (31, 'king', 'w');
+INSERT INTO chessmen VALUES (32, 'queen', 'w');
+
+INSERT INTO chessfield VALUES (1, 'H', 7);
+INSERT INTO chessfield VALUES (2, 'G', 7);
+INSERT INTO chessfield VALUES (3, 'F', 7);
+INSERT INTO chessfield VALUES (4, 'E', 7);
+INSERT INTO chessfield VALUES (5, 'D', 7);
+INSERT INTO chessfield VALUES (6, 'C', 7);
+INSERT INTO chessfield VALUES (7, 'B', 7);
+INSERT INTO chessfield VALUES (8, 'A', 7);
+INSERT INTO chessfield VALUES (9, 'A', 2);
+INSERT INTO chessfield VALUES (10, 'B', 2);
+INSERT INTO chessfield VALUES (11, 'C', 2);
+INSERT INTO chessfield VALUES (12, 'D', 2);
+INSERT INTO chessfield VALUES (13, 'E', 2);
+INSERT INTO chessfield VALUES (14, 'F', 2);
+INSERT INTO chessfield VALUES (15, 'G', 2);
+INSERT INTO chessfield VALUES (16, 'H', 2);
+INSERT INTO chessfield VALUES (17, 'H', 8);
+INSERT INTO chessfield VALUES (18, 'A', 8);
+INSERT INTO chessfield VALUES (19, 'A', 1);
+INSERT INTO chessfield VALUES (20, 'H', 1);
+INSERT INTO chessfield VALUES (21, 'G', 8);
+INSERT INTO chessfield VALUES (22, 'B', 8);
+INSERT INTO chessfield VALUES (23, 'B', 1);
+INSERT INTO chessfield VALUES (24, 'G', 1);
+INSERT INTO chessfield VALUES (25, 'F', 8);
+INSERT INTO chessfield VALUES (26, 'C', 8);
+INSERT INTO chessfield VALUES (27, 'C', 1);
+INSERT INTO chessfield VALUES (28, 'F', 1);
+INSERT INTO chessfield VALUES (29, 'D', 8);
+INSERT INTO chessfield VALUES (30, 'E', 8);
+INSERT INTO chessfield VALUES (31, 'E', 1);
+INSERT INTO chessfield VALUES (32, 'D', 1);
+
+//1
+SELECT COUNT (*) 
+FROM chessmen
+
+//2
+SELECT f_id 
+FROM chessmen 
+WHERE f_type LIKE 'k%';
+
+//3
+SELECT f_type, COUNT(f_type)
+FROM chessmen
+GROUP BY f_type;
+
+//4
+SELECT chessmen.f_id 
+FROM chessmen, chessfield
+WHERE chessmen.f_id = chessfield.f_id
+AND chessmen.f_colour = 'w'
+AND chessmen.f_type = 'pawn';
+
+//5
+SELECT chessmen.f_type, chessmen.f_colour 
+FROM chessmen, chessfield
+WHERE chessmen.f_id = chessfield.f_id
+AND ascii(chessfield.x) - ascii('A') + 1 = chessfield.y;
+
+DELETE FROM chessfield
+WHERE f_id = 1;
+DELETE FROM chessfield
+WHERE f_id = 23;
+DELETE FROM chessfield
+WHERE f_id = 27;
+
+//6
+SELECT chessmen.f_colour, COUNT(chessmen.f_colour)
+FROM chessmen, chessfield
+WHERE chessfield.f_id = chessmen.f_id
+GROUP BY chessmen.f_colour;
+
+//7
+SELECT DISTINCT chessmen.f_type FROM chessmen, chessfield
+WHERE chessmen.f_id = chessfield.f_id
+AND chessmen.f_colour = 'b';
+
+//8
+SELECT chessmen.f_type, COUNT(chessmen.f_type) 
+FROM chessmen, chessfield
+WHERE chessmen.f_id = chessfield.f_id
+AND chessmen.f_colour = 'b'
+GROUP BY chessmen.f_type;
+
+//9
+SELECT DISTINCT chessmen.f_type
+FROM chessmen, chessfield
+WHERE chessmen.f_id = chessfield.f_id
+GROUP BY chessmen.f_type 
+HAVING COUNT(chessmen.f_type) > 1;
+
+//10
+WITH A AS (SELECT chessmen.f_colour, COUNT(chessmen.f_colour) AS f_number
+	FROM chessmen, chessfield
+	WHERE chessmen.f_id = chessfield.f_id
+	GROUP BY chessmen.f_colour)
+SELECT *
+FROM A
+WHERE A.f_number = (SELECT MAX(A.f_number) FROM A);
+
+//11
+WITH rookCoords AS (
+	SELECT DISTINCT chessfield.x AS rookX, chessfield.y AS rookY
+	FROM chessfield, chessmen
+	WHERE chessmen.f_id = chessfield.f_id
+	AND chessmen.f_type = 'rook')
+SELECT DISTINCT chessmen.f_id, chessfield.x, chessfield.y
+FROM chessmen, chessfield, rookCoords
+WHERE chessmen.f_id = chessfield.f_id
+AND (chessfield.x = rookCoords.rookX 
+OR chessfield.y = rookCoords.rookY)
+ORDER BY chessmen.f_id
+
+//12
+SELECT chessmen.f_colour
+FROM chessmen, chessfield
+WHERE chessmen.f_id = chessfield.f_id
+AND chessmen.f_type = 'pawn'
+GROUP BY chessmen.f_colour
+HAVING COUNT(chessmen.f_type) = 8
+
+//13
+SELECT DISTINCT chessmen.f_id
+FROM chessmen, chessfield, chessfield2
+WHERE chessmen.f_id = chessfield.f_id 
+AND chessmen.f_id = chessfield2.f_id
+AND (chessfield.x != chessfield2.x
+OR chessfield.y != chessfield2.y)
+OR NOT EXISTS (
+	SELECT chessmen.f_id
+	FROM chessfield2 AS ch2
+	WHERE chessmen.f_id = ch2.f_id)
+AND EXISTS (
+    SELECT chessmen.f_id
+	FROM chessfield AS ch
+	WHERE chessmen.f_id = ch.f_id)
+
+//14
+WITH bkCoords AS (
+	SELECT chessfield.x AS x, chessfield.y AS y
+	FROM chessfield, chessmen
+	WHERE chessmen.f_id = chessfield.f_id
+	AND chessmen.f_type = 'king'
+	AND chessmen.f_colour = 'b')
+SELECT chessmen.f_id, chessfield.x, chessfield.y
+FROM chessmen, chessfield, bkCoords
+WHERE chessmen.f_id = chessfield.f_id
+AND abs(chessfield.y - bkCoords.y) BETWEEN 0 AND 2
+AND abs(ascii(chessfield.x) - ascii(bkCoords.x)) BETWEEN 0 AND 2
+AND abs(chessfield.y - bkCoords.y) + abs(ascii(chessfield.x) - ascii(bkCoords.x)) != 0
+
+//15
+WITH distance AS(
+	WITH wkCoords AS (
+		SELECT chessfield.x AS x, chessfield.y AS y
+		FROM chessfield, chessmen
+		WHERE chessmen.f_id = chessfield.f_id
+		AND chessmen.f_type = 'king'
+		AND chessmen.f_colour = 'w')
+	SELECT chessmen.f_id, abs(chessfield.y - wkCoords.y) + abs(ascii(chessfield.x) - ascii(wkCoords.x)) As dist
+	FROM chessmen, chessfield, wkCoords
+	WHERE chessmen.f_id = chessfield.f_id
+	AND abs(chessfield.y - wkCoords.y) + abs(ascii(chessfield.x) - ascii(wkCoords.x)) != 0)
+SELECT *
+FROM distance
+WHERE distance.dist = (SELECT MIN(distance.dist) FROM distance)
+
+//procedure
+CREATE OR REPLACE PROCEDURE moveFigure(move_id int, move_x char, move_y int) 
+LANGUAGE plpgsql 
+AS $$
+DECLARE move_colour CHAR;
+DECLARE colour CHAR;
+BEGIN
+	BEGIN
+		SELECT chessmen.f_colour
+		INTO move_colour
+		FROM chessmen
+		WHERE chessmen.f_id = move_id;
+	END;
+	BEGIN
+		SELECT chessmen.f_colour
+		INTO colour
+		FROM chessmen, chessfield
+		WHERE chessfield.x = move_x
+		AND chessfield.y = move_y
+		AND chessfield.f_id = chessmen.f_id;
+	END;
+	
+	IF ascii(colour) = ascii('b') OR ascii(colour) = ascii('w') THEN 
+		IF ascii(colour) != ascii(move_colour) THEN
+			DELETE FROM chessfield
+			WHERE chessfield.f_id = move_id;
+			DELETE FROM chessfield
+			WHERE chessfield.x = move_x
+			AND chessfield.y = move_y;
+			INSERT INTO chessfield VALUES(move_id, move_x, move_y);
+		END IF;
+	ELSE
+		DELETE FROM chessfield
+		WHERE chessfield.f_id = move_id;
+		INSERT INTO chessfield VALUES(move_id, move_x, move_y);
+	END IF;
+END;
+$$;
+
+call movefigure(1, 'A', 2);
+
+//function
+CREATE OR REPLACE FUNCTION movefunc(move_id int, move_x char, move_y int)
+RETURNS INT
+AS $$
+DECLARE move_colour CHAR;
+DECLARE colour CHAR;
+BEGIN
+	BEGIN
+		SELECT chessmen.f_colour
+		INTO move_colour
+		FROM chessmen
+		WHERE chessmen.f_id = move_id;
+	END;
+	BEGIN
+		SELECT chessmen.f_colour
+		INTO colour
+		FROM chessmen, chessfield
+		WHERE chessfield.x = move_x
+		AND chessfield.y = move_y
+		AND chessfield.f_id = chessmen.f_id;
+	END;
+	
+	IF ascii(colour) = ascii('b') OR ascii(colour) = ascii('w') THEN 
+		IF ascii(colour) != ascii(move_colour) THEN
+			DELETE FROM chessfield
+			WHERE chessfield.f_id = move_id;
+			DELETE FROM chessfield
+			WHERE chessfield.x = move_x
+			AND chessfield.y = move_y;
+			INSERT INTO chessfield VALUES(move_id, move_x, move_y);
+			RETURN 2;
+		ELSE
+		RETURN 0;
+		END IF;
+	ELSE
+		DELETE FROM chessfield
+		WHERE chessfield.f_id = move_id;
+		INSERT INTO chessfield VALUES(move_id, move_x, move_y);
+		RETURN 1;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT movefunc (1, 'H', 8);
+SELECT movefunc (1, 'H', 6);
+SELECT movefunc (1, 'H', 1);
+
+
+
+
+CREATE TABLE movedata (
+	move_n int NOT NULL,
+	f_id int CHECK (f_id > 0 AND f_id < 33),
+	x_old char NOT NULL CHECK (x_old IN ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H')),
+	y_old int NOT NULL CHECK (y_old > 0 and y_old < 9),
+	x_new char CHECK (x_new IN ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H')),
+	y_new int CHECK (y_new > 0 and y_new < 9),
+	change_time timestamp DEFAULT current_timestamp,
+	UNIQUE(move_n, f_id));
+
+//trigger
+CREATE OR REPLACE FUNCTION move_trigger() RETURNS trigger AS $move_trigger$
+DECLARE cur_number INT;
+DECLARE old_x CHAR;
+DECLARE old_y INT;
+BEGIN
+	SELECT MAX(move_n) INTO cur_number FROM movedata;
+	IF cur_number IS NULL 
+	THEN cur_number := 1;
+	END IF;
+
+	IF NEW IS NULL THEN
+		IF (SELECT COUNT(movedata.f_id) 
+			 FROM movedata 
+			 WHERE movedata.move_n = cur_number) = 2
+		OR (SELECT movedata.x_new 
+			 FROM movedata 
+			 WHERE movedata.move_n = cur_number) IS NOT NULL 
+		THEN 
+			cur_number = cur_number + 1;
+		END IF;
+
+		INSERT INTO movedata VALUES (cur_number, OLD.f_id, OLD.x, OLD.y, null, null);
+		RETURN OLD;
+	ELSE
+		SELECT movedata.x_old, movedata.y_old INTO old_x, old_y FROM movedata 
+		WHERE movedata.f_id = NEW.f_id
+		AND movedata.move_n = cur_number;
+		
+		IF old_x IS NOT NULL
+		THEN DELETE FROM movedata 
+		     WHERE movedata.f_id = NEW.f_id
+		     AND movedata.move_n = cur_number;
+		     
+			 INSERT INTO movedata VALUES (cur_number, NEW.f_id, old_x, old_y, NEW.x, NEW.y);
+		END IF;
+		
+		RETURN NEW;
+	END IF;
+END;
+$move_trigger$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER move_trigger AFTER INSERT OR DELETE ON chessfield
+FOR EACH ROW EXECUTE PROCEDURE move_trigger();
+
+
+--select * from chessfield order by f_id;
+--delete from chessfield where chessfield.f_id = 1
+--INSERT INTO chessfield VALUES (16, 'H', 2);
+--select * from movedata order by change_time
+--call movefigure(1, 'H', 7)
+
+
+
+
+CREATE OR REPLACE FUNCTION danger(color CHAR(1)) 
+RETURNS TABLE ( 
+    f_id INT
+)
+AS $$
+BEGIN
+	RETURN QUERY           
+	SELECT chessmen.f_id
+	FROM chessmen, chessfield, (SELECT chessfield.x AS x, chessfield.y AS y
+							    FROM chessfield, chessmen
+							    WHERE chessmen.f_id = chessfield.f_id
+							    AND chessmen.f_type = 'king'
+							    AND chessmen.f_colour = color) AS king
+	WHERE chessmen.f_id = chessfield.f_id
+	AND abs(chessfield.y - king.y) BETWEEN 0 AND 2
+	AND abs(ascii(chessfield.x) - ascii(king.x)) BETWEEN 0 AND 2
+	AND abs(chessfield.y - king.y) + abs(ascii(chessfield.x) - ascii(king.x)) != 0;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT * FROM danger('b');
+SELECT * FROM danger('w');
+
+
+
+
+
+
+
+
+
+
+

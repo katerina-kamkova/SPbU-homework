@@ -1,0 +1,582 @@
+sss
+////////////////////////////////
+/////////////TABLES/////////////
+////////////////////////////////
+
+CREATE TABLE planes (
+	model CHAR(20) PRIMARY KEY NOT NULL, 
+	seats INT);
+
+
+CREATE TABLE airports (
+	airport CHAR(50) PRIMARY KEY NOT NULL);
+
+
+CREATE TABLE week_schedule (
+	number CHAR(10) PRIMARY KEY NOT NULL,
+	model CHAR(20) NOT NULL REFERENCES planes (model), 
+	led CHAR(50) NOT NULL REFERENCES airports (airport),
+	muc CHAR(50) NOT NULL REFERENCES airports (airport),
+	week_day CHAR(3) NOT NULL CHECK(week_day IN ('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat')),
+	dep_time TIME NOT NULL,
+	flight_time TIME NOT NULL,
+	price MONEY NOT NULL);
+
+
+CREATE TABLE flights (
+	number CHAR(10) NOT NULL REFERENCES week_schedule (number),
+	dep_date DATE NOT NULL,
+	total_seats INT NOT NULL CHECK (total_seats > 0),
+	free_seats INT CHECK (free_seats >= 0),
+	PRIMARY KEY (number, dep_date));
+
+
+CREATE TABLE passengers (
+	passport CHAR(20) NOT NULL, 
+	surname CHAR(30) NOT NULL,
+	first_name CHAR(30) NOT NULL,
+	second_name CHAR(30),
+	number CHAR(10) NOT NULL,
+	dep_date DATE NOT NULL,
+	transfer CHAR(10),
+	FOREIGN KEY (number, dep_date) REFERENCES flights (number, dep_date),
+	PRIMARY KEY (number, dep_date, passport));
+
+
+CREATE TABLE archive (
+	number CHAR(10) NOT NULL REFERENCES week_schedule (number),
+	dep_date DATE NOT NULL,
+	total_seats INT NOT NULL,
+	sold_seats INT,
+	PRIMARY KEY (number, dep_date));
+
+////////////////////////////////////////
+/////////////EXTRA TRIGGERS/////////////
+////////////////////////////////////////
+
+///// Check whether led != muc /////
+
+CREATE OR REPLACE FUNCTION led_muc() 
+RETURNS trigger AS $led_muc$
+BEGIN
+	IF NEW.led = NEW.muc
+	THEN RAISE EXCEPTION 'led and muc must be different';
+	ELSE RETURN NEW;
+	END IF;
+END;
+$led_muc$ LANGUAGE plpgsql;
+
+CREATE TRIGGER led_muc BEFORE INSERT ON week_schedule
+FOR EACH ROW EXECUTE PROCEDURE led_muc();
+
+
+///// Fill total_seats in the plain according to its model /////
+
+CREATE OR REPLACE FUNCTION fill_total_seats() 
+RETURNS trigger AS $fill_total_seats$
+BEGIN
+	NEW.total_seats = (SELECT planes.seats
+					   FROM planes, week_schedule
+					   WHERE planes.model = week_schedule.model
+					   AND NEW.number = week_schedule.number);
+	RETURN NEW;
+END;
+$fill_total_seats$ LANGUAGE plpgsql;
+
+CREATE TRIGGER fill_total_seats BEFORE INSERT ON flights
+FOR EACH ROW EXECUTE PROCEDURE fill_total_seats();
+
+
+///// Check whether this flight can be done in this date /////
+
+CREATE OR REPLACE FUNCTION date_week_day() 
+RETURNS TRIGGER AS $date_week_day$
+DECLARE new_weekday INT;
+DECLARE weekday CHAR(3);
+BEGIN
+	SELECT EXTRACT(dow FROM NEW.dep_date), week_schedule.week_day 
+	INTO new_weekday, weekday
+	FROM week_schedule
+	WHERE NEW.number = week_schedule.number;
+
+	IF ((new_weekday = 0 AND weekday <> 'Sun')
+	OR (new_weekday = 1 AND weekday <> 'Mon')
+	OR (new_weekday = 2 AND weekday <> 'Tue')
+	OR (new_weekday = 3 AND weekday <> 'Wed')
+	OR (new_weekday = 4 AND weekday <> 'Thu')
+	OR (new_weekday = 5 AND weekday <> 'Fri')
+	OR (new_weekday = 6 AND weekday <> 'Sat'))
+	THEN RAISE EXCEPTION 'This info contains an invalid date';
+	END IF;
+
+	RETURN NEW;
+END;
+$date_week_day$ LANGUAGE plpgsql;
+
+CREATE TRIGGER date_week_day BEFORE INSERT ON flights
+FOR EACH ROW EXECUTE PROCEDURE date_week_day();
+
+
+///// Check whether it can be a transfer /////
+
+CREATE OR REPLACE FUNCTION check_transfer() 
+RETURNS trigger AS $check_transfer$
+DECLARE new_deptime TIME;
+DECLARE new_led CHAR(50);
+BEGIN
+	IF new.transfer IS NOT NULL
+	THEN SELECT week_schedule.dep_time, week_schedule.led
+		 INTO new_deptime, new_led
+		 FROM week_schedule
+		 WHERE week_schedule.number = new.number;
+
+	     IF EXISTS(SELECT flights.dep_date
+		 		   FROM week_schedule, flights
+		 		   WHERE new.dep_date + new_deptime - flights.dep_date - week_schedule.flight_time - week_schedule.dep_time < interval '12 hours'
+		 		   AND new.dep_date + new_deptime - flights.dep_date - week_schedule.flight_time - week_schedule.dep_time > interval '30 minutes'
+		 		   AND flights.number = week_schedule.number
+		 		   AND flights.number = new.transfer
+		 		   AND week_schedule.muc = new_led)
+		 THEN RETURN NEW;
+		 ELSE RETURN 0;
+		 END IF;
+	END IF;
+	
+	RETURN NEW;
+END;
+$check_transfer$ LANGUAGE plpgsql;
+
+CREATE TRIGGER check_transfer BEFORE INSERT ON passengers
+FOR EACH ROW EXECUTE PROCEDURE check_transfer(); 
+
+////////////////////////////////////
+//////////////TEST DATA/////////////
+////////////////////////////////////
+INSERT INTO airports VALUES ('St.Petersburg');
+INSERT INTO airports VALUES ('Antalia');
+INSERT INTO airports VALUES ('Tokyo');
+INSERT INTO airports VALUES ('Toronto');
+INSERT INTO airports VALUES ('Oslo');
+INSERT INTO airports VALUES ('New York');
+INSERT INTO airports VALUES ('Vena');
+INSERT INTO airports VALUES ('Mexico');
+INSERT INTO airports VALUES ('Mordor');
+INSERT INTO airports VALUES ('NeverLand');
+INSERT INTO airports VALUES ('Asgard');
+INSERT INTO airports VALUES ('WonderLand');
+INSERT INTO airports VALUES ('Wendimoor');
+
+INSERT INTO planes VALUES ('Airbus A333-300', 440);
+INSERT INTO planes VALUES ('Airbus A340-300', 295);
+INSERT INTO planes VALUES ('Airbus A380-800', 525);
+INSERT INTO planes VALUES ('Boeing 737-800', 189);
+INSERT INTO planes VALUES ('Boeing 777-300ER', 365);
+INSERT INTO planes VALUES ('Boeing 787-9', 290);
+INSERT INTO planes VALUES ('Embraer 175', 86);
+
+INSERT INTO week_schedule VALUES ('A', 'Airbus A333-300', 'Mexico', 'Asgard', 'Sun', '12:30', '05:35', 942);
+INSERT INTO week_schedule VALUES ('B', 'Embraer 175', 'Asgard', 'St.Petersburg', 'Mon', '04:12', '04:31', 462);
+INSERT INTO week_schedule VALUES ('C', 'Airbus A333-300', 'St.Petersburg', 'WonderLand', 'Mon', '09:30', '07:27', 234);
+INSERT INTO week_schedule VALUES ('D', 'Boeing 737-800', 'WonderLand', 'Toronto', 'Mon', '19:31', '13:53', 354);
+INSERT INTO week_schedule VALUES ('E', 'Embraer 175', 'Asgard', 'WonderLand', 'Sun', '20:56', '12:35', 222);
+INSERT INTO week_schedule VALUES ('F', 'Boeing 777-300ER', 'WonderLand', 'Mordor', 'Mon', '17:43', '11:42', 242);
+INSERT INTO week_schedule VALUES ('G', 'Airbus A380-800', 'Vena', 'St.Petersburg', 'Tue', '19:27', '03:42', 317);
+INSERT INTO week_schedule VALUES ('H', 'Airbus A340-300', 'St.Petersburg', 'NeverLand', 'Wed', '11:23', '12:43', 947);
+INSERT INTO week_schedule VALUES ('I', 'Boeing 777-300ER', 'St.Petersburg', 'Antalia', 'Wed', '03:13', '03:23', 831);
+INSERT INTO week_schedule VALUES ('J', 'Airbus A340-300', 'Wendimoor', 'Oslo', 'Wed', '16:35', '11:52', 924);
+INSERT INTO week_schedule VALUES ('K', 'Airbus A380-800', 'Mordor', 'Tokyo', 'Thu', '18:00', '10:32', 972);
+INSERT INTO week_schedule VALUES ('L', 'Embraer 175', 'Tokyo', 'Asgard', 'Fri', '06:30', '11:34', 913);
+INSERT INTO week_schedule VALUES ('M', 'Airbus A333-300', 'Mexico', 'Vena', 'Thu', '13:03', '00:40', 103);
+INSERT INTO week_schedule VALUES ('N', 'Boeing 787-9', 'St.Petersburg', 'Toronto', 'Fri', '12:42', '14:02', 605);
+INSERT INTO week_schedule VALUES ('O', 'Embraer 175', 'St.Petersburg', 'Toronto', 'Fri', '16:01', '03:42', 254);
+INSERT INTO week_schedule VALUES ('P', 'Boeing 737-800', 'New York', 'St.Petersburg', 'Sat', '01:39', '06:19', 762);
+INSERT INTO week_schedule VALUES ('Q', 'Airbus A380-800', 'St.Petersburg', 'Antalia', 'Sat', '10:03', '03:42', 101);
+// Check led_muc trigger
+INSERT INTO week_schedule VALUES ('R', 'Airbus A380-800', 'St.Petersburg', 'St.Petersburg', 'Sat', '10:03', '03:42', 101);
+
+INSERT INTO flights VALUES ('A', '2019-04-28', 13, 16); -- For big
+INSERT INTO flights VALUES ('B', '2019-04-29', 13, 12);
+INSERT INTO flights VALUES ('C', '2019-04-29', 13, 15);
+INSERT INTO flights VALUES ('D', '2019-04-29', 13, 21);
+INSERT INTO flights VALUES ('E', '2019-04-28', 13, 17);
+INSERT INTO flights VALUES ('F', '2019-04-29', 13, 12); 
+INSERT INTO flights VALUES ('N', '2019-04-26', 13, 23);
+INSERT INTO flights VALUES ('O', '2019-04-26', 13, 12);
+INSERT INTO flights VALUES ('P', '2019-04-27', 13, 12);
+INSERT INTO flights VALUES ('Q', '2019-04-27', 13, 14); -- For big
+INSERT INTO flights VALUES ('G', '2019-03-05', 13, 11);
+INSERT INTO flights VALUES ('H', '2019-06-12', 13, 31); -- For 1st select
+INSERT INTO flights VALUES ('I', '2019-06-12', 13, 11); 
+INSERT INTO flights VALUES ('J', '2019-06-12', 13, 13);
+INSERT INTO flights VALUES ('K', '2019-06-13', 13, 10);
+INSERT INTO flights VALUES ('L', '2019-06-14', 13, 14);
+INSERT INTO flights VALUES ('M', '2019-06-13', 13, 15);
+INSERT INTO flights VALUES ('G', '2019-04-16', 13, 12);
+INSERT INTO flights VALUES ('H', '2019-04-17', 13, 11);
+INSERT INTO flights VALUES ('I', '2019-04-17', 13, 12);
+INSERT INTO flights VALUES ('J', '2019-04-17', 13, 14);
+INSERT INTO flights VALUES ('K', '2019-04-18', 13, 11);
+INSERT INTO flights VALUES ('L', '2019-04-19', 13, 15);
+INSERT INTO flights VALUES ('L', '2019-04-26', 13, 0);
+// Check week_day trigger 
+INSERT INTO flights VALUES ('A', '2019-04-27', 13, 6);
+
+INSERT INTO passengers VALUES ('8724 298724', 'Toropov', 'Alexey', 'Andreevich', 'A', '2019-04-28', NULL);
+INSERT INTO passengers VALUES ('8724 298724', 'Toropov', 'Alexey', 'Andreevich', 'B', '2019-04-29', 'A');
+INSERT INTO passengers VALUES ('8724 298724', 'Toropov', 'Alexey', 'Andreevich', 'C', '2019-04-29', 'B');
+INSERT INTO passengers VALUES ('8724 298724', 'Toropov', 'Alexey', 'Andreevich', 'D', '2019-04-29', 'C');
+INSERT INTO passengers VALUES ('8724 298724', 'Toropov', 'Alexey', 'Andreevich', 'N', '2019-04-26', NULL);
+INSERT INTO passengers VALUES ('8724 298724', 'Toropov', 'Alexey', 'Andreevich', 'P', '2019-04-27', NULL);
+INSERT INTO passengers VALUES ('8724 298724', 'Toropov', 'Alexey', 'Andreevich', 'Q', '2019-04-27', 'P');
+INSERT INTO passengers VALUES ('8724 298724', 'Toropov', 'Alexey', 'Andreevich', 'G', '2019-03-05', NULL);
+INSERT INTO passengers VALUES ('8724 298724', 'Toropov', 'Alexey', 'Andreevich', 'H', '2019-06-12', NULL);
+INSERT INTO passengers VALUES ('8724 298724', 'Toropov', 'Alexey', 'Andreevich', 'I', '2019-06-12', NULL);
+INSERT INTO passengers VALUES ('8724 298724', 'Toropov', 'Alexey', 'Andreevich', 'J', '2019-06-12', NULL);
+INSERT INTO passengers VALUES ('8724 298724', 'Toropov', 'Alexey', 'Andreevich', 'L', '2019-06-14', NULL);
+INSERT INTO passengers VALUES ('8724 298724', 'Toropov', 'Alexey', 'Andreevich', 'M', '2019-06-13', NULL);
+INSERT INTO passengers VALUES ('8724 298724', 'Toropov', 'Alexey', 'Andreevich', 'G', '2019-04-16', NULL);
+INSERT INTO passengers VALUES ('8724 298724', 'Toropov', 'Alexey', 'Andreevich', 'H', '2019-04-17', NULL);
+INSERT INTO passengers VALUES ('8724 298724', 'Toropov', 'Alexey', 'Andreevich', 'I', '2019-04-17', NULL);
+INSERT INTO passengers VALUES ('8724 298724', 'Toropov', 'Alexey', 'Andreevich', 'J', '2019-04-17', NULL);
+INSERT INTO passengers VALUES ('1323 300513', 'Deberdeeva', 'Anastasia', 'Victorovna', 'A', '2019-04-28', NULL);
+INSERT INTO passengers VALUES ('1323 300513', 'Deberdeeva', 'Anastasia', 'Victorovna', 'B', '2019-04-29', 'A');
+INSERT INTO passengers VALUES ('1323 300513', 'Deberdeeva', 'Anastasia', 'Victorovna', 'C', '2019-04-29', 'B');
+INSERT INTO passengers VALUES ('1323 300513', 'Deberdeeva', 'Anastasia', 'Victorovna', 'D', '2019-04-29', 'C');
+INSERT INTO passengers VALUES ('1323 300513', 'Deberdeeva', 'Anastasia', 'Victorovna', 'N', '2019-04-26', NULL);
+INSERT INTO passengers VALUES ('1323 300513', 'Deberdeeva', 'Anastasia', 'Victorovna', 'P', '2019-04-27', NULL);
+INSERT INTO passengers VALUES ('1323 300513', 'Deberdeeva', 'Anastasia', 'Victorovna', 'Q', '2019-04-27', 'P');
+INSERT INTO passengers VALUES ('1323 300513', 'Deberdeeva', 'Anastasia', 'Victorovna', 'H', '2019-06-12', NULL);
+INSERT INTO passengers VALUES ('1323 300513', 'Deberdeeva', 'Anastasia', 'Victorovna', 'I', '2019-06-12', NULL);
+INSERT INTO passengers VALUES ('1323 300513', 'Deberdeeva', 'Anastasia', 'Victorovna', 'J', '2019-06-12', NULL);
+INSERT INTO passengers VALUES ('HA-18420214', 'Gently', 'Dirk', 'Antony', 'Q', '2019-04-27', NULL);
+INSERT INTO passengers VALUES ('HA-18420214', 'Gently', 'Dirk', 'Antony', 'O', '2019-04-26', NULL);
+INSERT INTO passengers VALUES ('HA-18420214', 'Gently', 'Dirk', 'Antony', 'F', '2019-04-29', NULL);
+INSERT INTO passengers VALUES ('HA-18420214', 'Gently', 'Dirk', 'Antony', 'A', '2019-04-28', NULL);
+INSERT INTO passengers VALUES ('HA-18420214', 'Gently', 'Dirk', 'Antony', 'G', '2019-03-05', NULL);
+INSERT INTO passengers VALUES ('HA-18420214', 'Gently', 'Dirk', 'Antony', 'H', '2019-06-12', NULL);
+INSERT INTO passengers VALUES ('HA-18420214', 'Gently', 'Dirk', 'Antony', 'I', '2019-06-12', NULL);
+INSERT INTO passengers VALUES ('LS-31251753', 'Beligio', 'Gurgan', 'Atilla', 'Q', '2019-04-27', NULL);
+INSERT INTO passengers VALUES ('LS-31251753', 'Beligio', 'Gurgan', 'Atilla', 'O', '2019-04-26', NULL);
+INSERT INTO passengers VALUES ('LS-31251753', 'Beligio', 'Gurgan', 'Atilla', 'A', '2019-04-28', NULL);
+INSERT INTO passengers VALUES ('LS-31251753', 'Beligio', 'Gurgan', 'Atilla', 'G', '2019-03-05', NULL);
+INSERT INTO passengers VALUES ('LS-31251753', 'Beligio', 'Gurgan', 'Atilla', 'H', '2019-06-12', NULL);
+INSERT INTO passengers VALUES ('LS-31251753', 'Beligio', 'Gurgan', 'Atilla', 'F', '2019-04-29', NULL); 
+INSERT INTO passengers VALUES ('LS-31251753', 'Beligio', 'Gurgan', 'Atilla', 'I', '2019-06-12', NULL);
+INSERT INTO passengers VALUES ('LA-28658118', 'Smith', 'Angela', 'Clementina', 'Q', '2019-04-27', NULL);
+INSERT INTO passengers VALUES ('LA-28658118', 'Smith', 'Angela', 'Clementina', 'O', '2019-04-26', NULL);
+INSERT INTO passengers VALUES ('LA-28658118', 'Smith', 'Angela', 'Clementina', 'F', '2019-04-29', NULL);
+INSERT INTO passengers VALUES ('LA-28658118', 'Smith', 'Angela', 'Clementina', 'A', '2019-04-28', NULL);
+INSERT INTO passengers VALUES ('1839 419834', 'Johns', 'Jessica', 'Anna', 'P', '2019-04-27', NULL);
+INSERT INTO passengers VALUES ('1839 419834', 'Johns', 'Jessica', 'Anna', 'O', '2019-04-26', NULL);
+INSERT INTO passengers VALUES ('9238 210423', 'Parker', 'Piter', 'Williams', 'N', '2019-04-26', NULL);
+INSERT INTO passengers VALUES ('9238 210423', 'Parker', 'Piter', 'Williams', 'F', '2019-04-29', NULL);
+INSERT INTO passengers VALUES ('BE-13480153', 'Brotsman', 'Todd', 'Samuel', 'Q', '2019-04-27', NULL);
+INSERT INTO passengers VALUES ('BE-13480153', 'Brotsman', 'Todd', 'Samuel', 'N', '2019-04-26', NULL);
+INSERT INTO passengers VALUES ('PA-13385902', 'Pond', 'Robert', 'Illia', 'P', '2019-04-27', NULL);
+INSERT INTO passengers VALUES ('PA-13385902', 'Pond', 'Robert', 'Illia', 'Q', '2019-04-27', 'P');
+INSERT INTO passengers VALUES ('FV-13705910', 'Pond', 'Amelia', 'Hanna', 'P', '2019-04-27', NULL);
+INSERT INTO passengers VALUES ('FV-13705910', 'Pond', 'Amelia', 'Hanna', 'Q', '2019-04-27', 'P');
+INSERT INTO passengers VALUES ('3193 801395', 'Mironova', 'Anna', 'Mihailovna', 'P', '2019-04-27', NULL);
+INSERT INTO passengers VALUES ('9131 840194', 'Antonov', 'Ivan', 'Andreevich', 'O', '2019-04-26', NULL);
+INSERT INTO passengers VALUES ('', '', '', '', '', '', );
+// Check transfer trigger
+INSERT INTO passengers VALUES ('9244 134701', 'Shtoltz', 'Margaret', 'Lilla', 'B', '2019-04-29', NULL);
+INSERT INTO passengers VALUES ('9244 134701', 'Shtoltz', 'Margaret', 'Lilla', 'N', '2019-04-26', 'B');
+
+/////////////////////////////////
+//////////////SELECT/////////////
+/////////////////////////////////
+
+///// Number of tickets sold from LED to MUC for last month /////
+
+SELECT week_schedule.led, week_schedule.muc, SUM(flights.total_seats - flights.free_seats)
+FROM week_schedule, flights
+WHERE flights.number = week_schedule.number
+AND flights.dep_date BETWEEN current_date - interval '1 month' AND current_date
+GROUP BY (week_schedule.led, week_schedule.muc)
+
+
+///// 10 passengers who fligh more then others /////
+
+SELECT passport, COUNT(passport) AS num
+FROM passengers
+GROUP BY passport
+ORDER BY num DESC
+FETCH FIRST 10 ROWS ONLY
+
+
+///// Define most popular direction from St.Petersburg /////
+
+WITH A AS (SELECT week_schedule.muc, SUM(flights.total_seats - flights.free_seats) AS sold
+		   FROM week_schedule, flights
+		   WHERE week_schedule.number = flights.number
+		   AND week_schedule.led = 'St.Petersburg'
+		   GROUP BY week_schedule.muc)
+SELECT *
+FROM A
+WHERE A.sold = (SELECT MAX(A.sold) FROM A);
+
+
+///// Which airport is the most popular for transfer /////
+
+WITH A AS (SELECT week_schedule.led AS led, COUNT(week_schedule.led) AS transfernumber
+							FROM week_schedule, passengers
+							WHERE passengers.transfer IS NOT NULL
+							AND passengers.transfer = week_schedule.number
+							GROUP BY week_schedule.led)
+SELECT DISTINCT week_schedule.led, A.transfernumber
+FROM week_schedule, A 
+WHERE week_schedule.led = A.led
+AND A.transfernumber = (SELECT MAX(A.transfernumber) FROM A);
+
+
+///// What average time people spend for transfer for last 3 months /////
+
+CREATE OR REPLACE FUNCTION count_time(t1 TIME, t2 TIME, t3 TIME) 
+RETURNS TIME
+AS $$
+DECLARE ttt TIME;
+BEGIN
+	ttt = t3 - t1 - t2;
+	
+	IF ttt <= '12:00'
+	THEN RETURN ttt;
+	ELSE RETURN '24:00' - ttt;
+	END IF;
+	
+END;
+$$ LANGUAGE plpgsql;
+
+WITH C AS (WITH A AS (SELECT passengers.passport AS pas, passengers.number AS num, passengers.dep_date AS dat, week_schedule.dep_time AS time1, week_schedule.flight_time AS time2
+		   			  FROM passengers, week_schedule
+		   			  WHERE passengers.transfer IS NOT NULL
+		   			  AND passengers.transfer = week_schedule.number
+					  AND current_date < passengers.dep_date + interval '4 months'
+					  AND current_date > passengers.dep_date),
+				B AS (SELECT passengers.passport AS pas, passengers.number AS num, passengers.dep_date AS dat, week_schedule.dep_time AS time1
+		  			  FROM passengers, week_schedule
+		  			  WHERE passengers.transfer IS NOT NULL
+		  			  AND passengers.number = week_schedule.number)
+		   SELECT count_time(A.time1, A.time2, B.time1) AS transfer_time
+		   FROM A, B
+		   WHERE A.pas = B.pas
+		   AND A.num = B.num
+		   AND A.dat = B.dat)
+SELECT avg(transfer_time)
+FROM C
+
+
+/////////////////////////////////
+//////////////TRIGGER/////////////
+/////////////////////////////////
+
+///// Lessen free_seats while buying /////
+
+CREATE OR REPLACE FUNCTION reduce_free_seats() 
+RETURNS trigger AS $reduce_free_seats$
+DECLARE freeseats INT;
+BEGIN
+	SELECT free_seats INTO freeseats FROM flights 
+	WHERE number = new.number AND dep_date = new.dep_date;
+	
+	IF freeseats = 0
+	THEN RAISE EXCEPTION 'All tickets for this flight are already sold';
+	ELSE UPDATE flights SET free_seats = free_seats - 1 
+		 WHERE number = new.number AND dep_date = new.dep_date;
+	END IF;
+	
+	RETURN new;
+END;
+$reduce_free_seats$ LANGUAGE plpgsql;
+
+CREATE TRIGGER reduce_free_seats BEFORE INSERT ON passengers
+FOR EACH ROW EXECUTE PROCEDURE reduce_free_seats();
+
+
+////////////////////////////////////
+//////////////Procedure/////////////
+////////////////////////////////////
+
+///// Choose all possible flights with 1/2 transfers /////
+
+CREATE OR REPLACE FUNCTION possible_flights(ddep_date DATE, lled CHAR(50), mmuc CHAR(50), mucequal BOOL, severaldays BOOL) 
+RETURNS TABLE ( 
+	number CHAR(10),
+	dep_date DATE
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	SELECT flights.number, flights.dep_date
+	FROM flights, week_schedule
+	WHERE week_schedule.number = flights.number
+	AND lled = week_schedule.led
+	AND (CASE WHEN mucequal THEN mmuc = week_schedule.muc
+		 ELSE mmuc <> week_schedule.muc
+		 END)
+	AND (CASE WHEN severaldays THEN ABS(ddep_date - flights.dep_date) <= 3 
+		 ELSE ddep_date = flights.dep_date
+		 END);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION one_transfer(num CHAR(10), dat DATE, wanted_muc CHAR(50), mucequal BOOL, gap INTERVAL) 
+RETURNS TABLE ( 
+	number CHAR(10),
+	dep_date DATE
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	WITH A AS (SELECT week_schedule.dep_time AS deptime, week_schedule.flight_time AS flighttime, week_schedule.muc AS muc
+			   FROM week_schedule
+			   WHERE week_schedule.number = num)
+	SELECT flights.number, flights.dep_date
+	FROM week_schedule, flights, A
+	WHERE flights.dep_date + week_schedule.dep_time - dat - A.deptime - A.flighttime < gap
+	AND flights.dep_date + week_schedule.dep_time - dat - A.deptime - A.flighttime > interval '30 minutes'
+	AND flights.number = week_schedule.number
+	AND week_schedule.led = A.muc
+	AND (CASE WHEN mucequal THEN week_schedule.muc = wanted_muc
+		 ELSE week_schedule.muc <> wanted_muc
+		 END);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION two_transfers(num CHAR(10), dat DATE, wanted_muc CHAR(50)) 
+RETURNS TABLE ( 
+	number1 CHAR(10),
+	dep_date1 DATE,
+	number2 CHAR(10),
+	dep_date2 DATE
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	WITH B AS (SELECT * FROM one_transfer(num, dat, wanted_muc, false, '12 hours'))
+	SELECT B.number, B.dep_date, C.number, C.dep_date
+	FROM B, LATERAL one_transfer(B.number, B.dep_date, wanted_muc, true, '12 hours') C;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION find_transfer_flights(wanted_dep_date DATE, wanted_led CHAR(50), wanted_muc CHAR(50))
+RETURNS TABLE ( 
+	number1 CHAR(10),
+	dep_date1 DATE,
+	number2 CHAR(10),
+	dep_date2 DATE,
+	number3 CHAR(10),
+	dep_date3 DATE, 
+	jt INTERVAL
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	WITH A AS (select * from possible_flights(wanted_dep_date, wanted_led, wanted_muc, false, false))
+	SELECT A.number, A.dep_date, B.number, B.dep_date, NULL, NULL, journey_time(A.number, A.dep_date, B.number, B.dep_date) AS jt
+	FROM A, LATERAL one_transfer(A.number, A.dep_date, wanted_muc, true, '12 hours') B
+	UNION
+	SELECT A.number, A.dep_date, C.number1, C.dep_date1, C.number2, C.dep_date2, journey_time(A.number, A.dep_date, C.number2, C.dep_date2) AS jt
+	FROM A, LATERAL two_transfers(A.number, A.dep_date, wanted_muc) C
+	ORDER BY jt;
+END;
+$$ LANGUAGE plpgsql;
+
+///////// Func to count journey time /////////////
+
+CREATE OR REPLACE FUNCTION journey_time(
+	number1 CHAR(10),
+	date1 DATE,
+	number2 CHAR(10),
+	date2 DATE)
+RETURNS INTERVAL
+AS $$
+DECLARE t2 TIME;
+DECLARE d1 TIME; 
+DECLARE d2 TIME;
+BEGIN
+	SELECT dep_time INTO d1 FROM week_schedule WHERE number = number1;
+	SELECT flight_time, dep_time INTO t2, d2 FROM week_schedule WHERE number = number2;
+
+	RETURN (date2 + d2 + t2) - (date1 + d1);
+	
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+///////////////////////////////
+//////////////VIEW/////////////
+///////////////////////////////
+
+///// Discount /////
+
+CREATE OR REPLACE VIEW discount 
+AS SELECT DISTINCT passengers.passport,CASE WHEN A.flights >= 4 THEN 20
+			       					ELSE (A.flights * 5)
+			       					END
+FROM passengers, (SELECT passport AS passport, (COUNT(*) / 10) AS flights
+		  		  FROM passengers
+		  		  WHERE transfer IS NULL 
+		  		  GROUP BY passport) AS A
+WHERE passengers.passport = A.passport
+
+
+///// Best offer /////
+
+CREATE OR REPLACE FUNCTION count_money(
+	number1 CHAR(10),
+	number2 CHAR(10))
+RETURNS MONEY
+AS $$
+BEGIN
+	IF number2 IS NULL
+	THEN RETURN (SELECT price FROM week_schedule WHERE number = number1);
+	ELSE RETURN (SELECT price FROM week_schedule WHERE number = number1) + (SELECT price FROM week_schedule WHERE number = number2);
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION best_offer(wanted_dep_date DATE, wanted_led CHAR(50), wanted_muc CHAR(50))
+RETURNS TABLE ( 
+	number1 CHAR(10),
+	dep_date1 DATE,
+	number2 CHAR(10),
+	dep_date2 DATE,
+	price MONEY
+)
+AS $$
+BEGIN
+	RETURN QUERY
+	WITH list AS (WITH A AS (select * from possible_flights(wanted_dep_date, wanted_led, wanted_muc, false, true))
+				  SELECT A.number, A.dep_date, B.number, B.dep_date, count_money(A.number, B.number) AS p
+				  FROM A, LATERAL one_transfer(A.number, A.dep_date, wanted_muc, true, '5 hours') B
+				  UNION
+				  SELECT number, dep_date, NULL, NULL, count_money(number, NULL) AS p
+				  FROM possible_flights(wanted_dep_date, wanted_led, wanted_muc, true, true))
+	SELECT * FROM list
+	WHERE list.p = (SELECT MIN(list.p) FROM list);
+END;
+$$ LANGUAGE plpgsql;
+
+
+///// Average occupancy /////
+
+CREATE OR REPLACE VIEW average_occupancy
+AS WITH A AS (SELECT week_schedule.led AS led, week_schedule.muc AS muc, EXTRACT(MONTH FROM flights.dep_date) AS m, COUNT(flights.*) AS c
+			  FROM flights, week_schedule
+			  WHERE week_schedule.number = flights.number
+			  AND flights.dep_date < current_date
+			  AND current_date < flights.dep_date + interval '1 year'
+			  GROUP BY (week_schedule.led, week_schedule.muc, EXTRACT(MONTH FROM flights.dep_date))),
+	    B AS (SELECT week_schedule.led AS led, week_schedule.muc AS muc, EXTRACT(MONTH FROM flights.dep_date) AS m, SUM((flights.total_seats - flights.free_seats) * 100 / flights.total_seats) AS s
+			  FROM week_schedule, flights
+			  WHERE week_schedule.number = flights.number
+			  AND flights.dep_date < current_date
+			  AND current_date < flights.dep_date + interval '1 year'
+		 	  GROUP BY (week_schedule.led, week_schedule.muc, EXTRACT(MONTH FROM flights.dep_date)))
+SELECT A.led, A.muc, A.m, B.s / A.c
+FROM A, B
+WHERE A.led = B.led
+AND A.muc = B.muc
+

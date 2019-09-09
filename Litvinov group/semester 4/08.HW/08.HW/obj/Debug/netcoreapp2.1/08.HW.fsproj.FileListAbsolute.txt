@@ -1,0 +1,14 @@
+C:\HW-4th-sem\08.HW\08.HW\obj\Debug\netcoreapp2.1\08.HW.fsprojAssemblyReference.cache
+C:\HW-4th-sem\08.HW\08.HW\obj\Debug\netcoreapp2.1\08.HW.AssemblyInfoInputs.cache
+C:\HW-4th-sem\08.HW\08.HW\obj\Debug\netcoreapp2.1\08.HW.AssemblyInfo.fs
+C:\HW-4th-sem\08.HW\08.HW\bin\Debug\netcoreapp2.1\08.HW.deps.json
+C:\HW-4th-sem\08.HW\08.HW\bin\Debug\netcoreapp2.1\08.HW.runtimeconfig.json
+C:\HW-4th-sem\08.HW\08.HW\bin\Debug\netcoreapp2.1\08.HW.runtimeconfig.dev.json
+C:\HW-4th-sem\08.HW\08.HW\bin\Debug\netcoreapp2.1\08.HW.dll
+C:\HW-4th-sem\08.HW\08.HW\bin\Debug\netcoreapp2.1\08.HW.pdb
+C:\HW-4th-sem\08.HW\08.HW\obj\Debug\netcoreapp2.1\08.HW.dll
+C:\HW-4th-sem\08.HW\08.HW\obj\Debug\netcoreapp2.1\08.HW.pdb
+C:\HW-4th-sem\08.HW\08.HW\bin\Debug\netcoreapp2.1\NUnit3.TestAdapter.dll
+C:\HW-4th-sem\08.HW\08.HW\bin\Debug\netcoreapp2.1\NUnit3.TestAdapter.pdb
+C:\HW-4th-sem\08.HW\08.HW\bin\Debug\netcoreapp2.1\nunit.engine.dll
+C:\HW-4th-sem\08.HW\08.HW\bin\Debug\netcoreapp2.1\nunit.engine.api.dll

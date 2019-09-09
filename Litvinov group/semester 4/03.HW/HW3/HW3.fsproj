@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="3.1-MapFilterFold.fs" />
+    <Compile Include="3.2-MapTree.fs" />
+    <Compile Include="3.3-ParseTree.fs" />
+    <Compile Include="3.4-PrimeNumbers.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+</Project>

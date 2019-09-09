@@ -1,0 +1,12 @@
+image: Visual Studio 2017
+
+branches:
+  only:
+    - 07.MyNUnit
+
+before_build:
+  - nuget restore 3rdSemester/MyNUnit/MyNUnit.sln
+
+
+build:
+  project: 3rdSemester/MyNUnit/MyNUnit.sln

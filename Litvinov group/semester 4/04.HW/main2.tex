@@ -1,0 +1,16 @@
+\documentclass{article}
+\usepackage{amsmath}
+
+\begin{document}
+
+$\\
+S\ K\ K\ = \\
+(\lambda x\ y\ z.x\ z\ (y\ z))\ (\lambda x\ y.x)\ (\lambda x\ y.x)\  \longrightarrow_\beta \\
+(\lambda y\ z.(\lambda x\ y.x)\ z\ (y\ z))\ (\lambda x\ y.x)\  \longrightarrow_\beta \\
+(\lambda z.(\lambda x\ y.x)\ z\ ((\lambda x\ y.x)\ z))\  \longrightarrow_\beta \\
+(\lambda z.(\lambda y.z)\ ((\lambda x\ y.x)\ z))\  \longrightarrow_\beta \\
+\lambda z.z  \longrightarrow_\beta \\
+I
+$
+
+\end{document}

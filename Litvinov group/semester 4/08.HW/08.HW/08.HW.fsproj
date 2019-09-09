@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <RootNamespace>_08.HW</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Lazy\ILazy.fs" />
+    <Compile Include="Lazy\SingleThreadLazy.fs" />
+    <Compile Include="Lazy\MultiThreadLazy.fs" />
+    <Compile Include="Lazy\MultiThreadLazyLockFree.fs" />
+    <Compile Include="Lazy\LazyFactory.fs" />
+    <Compile Include="Veb.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
+  </ItemGroup>
+
+</Project>

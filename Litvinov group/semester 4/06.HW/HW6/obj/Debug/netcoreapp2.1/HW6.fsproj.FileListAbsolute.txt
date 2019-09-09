@@ -1,0 +1,10 @@
+C:\HW-4th-sem\HW6\HW6\bin\Debug\netcoreapp2.1\HW6.deps.json
+C:\HW-4th-sem\HW6\HW6\bin\Debug\netcoreapp2.1\HW6.runtimeconfig.json
+C:\HW-4th-sem\HW6\HW6\bin\Debug\netcoreapp2.1\HW6.runtimeconfig.dev.json
+C:\HW-4th-sem\HW6\HW6\bin\Debug\netcoreapp2.1\HW6.dll
+C:\HW-4th-sem\HW6\HW6\bin\Debug\netcoreapp2.1\HW6.pdb
+C:\HW-4th-sem\HW6\HW6\obj\Debug\netcoreapp2.1\HW6.fsprojAssemblyReference.cache
+C:\HW-4th-sem\HW6\HW6\obj\Debug\netcoreapp2.1\HW6.AssemblyInfoInputs.cache
+C:\HW-4th-sem\HW6\HW6\obj\Debug\netcoreapp2.1\HW6.AssemblyInfo.fs
+C:\HW-4th-sem\HW6\HW6\obj\Debug\netcoreapp2.1\HW6.dll
+C:\HW-4th-sem\HW6\HW6\obj\Debug\netcoreapp2.1\HW6.pdb

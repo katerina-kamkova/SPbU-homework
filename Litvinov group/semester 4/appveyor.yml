@@ -1,0 +1,15 @@
+image: Visual Studio 2017
+
+branches:
+  only:
+    - 08.HW
+
+before_build:
+    - nuget restore 08.HW/08.HW.sln
+
+
+build:
+    project: 08.HW/08.HW.sln
+
+test_script: 
+    - dotnet test 08.HW/08.HW.sln

@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 
 namespace Task1
 {
   public class Program
   {
+    // Procedure that, when numbering pairs, by number produces a pair (row and column numbers)
     public static void Main(string[] args)
     {
       while (true)
@@ -13,15 +14,18 @@ namespace Task1
         var i = 1;
         var j = 0;
 
+        // Enter the number
         Console.Write("Enter the number: ");
         number = Convert.ToInt32(Console.ReadLine());
 
+        // Find diagonal number
         while (number > currentSum)
         {
           ++j;
           currentSum += j;
         }
 
+        // Find wanted pair, moving down along the diagonal
         if (currentSum != number)
         {
           while (number < currentSum)

@@ -11,12 +11,14 @@ namespace Task1
 
     public static double Function(double x)
     {
-      return 10 * Math.Cos(x) - 0.1 * Math.Pow(x, 2);
+      //return 10 * Math.Cos(x) - 0.1 * Math.Pow(x, 2);
+      return Math.Pow(x, 3) - 1.0;
     }
 
     public static double Derivative(double x)
     {
-      return (-10) * Math.Sin(x) - 0.2 * x;
+      //return (-10) * Math.Sin(x) - 0.2 * x;
+      return 3.0 * Math.Pow(x, 2);
     }
 
     public static List<(double, double)> Split(int stepNumber)
@@ -56,7 +58,7 @@ namespace Task1
           }
           counter++;
         }
-        answers.Add(((section.Item2 + section.Item1) / 2, counter, (a + b) / 2, b - a, Function((a + b) / 2)));
+        answers.Add(((section.Item2 + section.Item1) / 2, counter, (a + b) / 2, b - a, Math.Abs(Function((a + b) / 2))));
       }
       return answers;
     }
@@ -67,7 +69,7 @@ namespace Task1
       foreach (var section in sections)
       {
         var counter = 0;
-        var xStart = Derivative(section.Item1) != 0 ? section.Item1 : section.Item1 + E;
+        var xStart = Derivative(section.Item1) != 0 ? section.Item1 : section.Item1 - E;
         var xNew = xStart - Function(xStart) * p / Derivative(xStart);
         while (Math.Abs(xStart - xNew) > E)
         {
@@ -80,7 +82,7 @@ namespace Task1
           xNew = xStart - Function(xStart) * p / Derivative(xStart);
           counter++;
         }
-        answers.Add((section.Item1, counter, xNew, Math.Abs(xStart - xNew), Function(xNew)));
+        answers.Add((section.Item1, counter, xNew, Math.Abs(xStart - xNew), Math.Abs(Function(xNew))));
       }
       return answers;
     }
@@ -99,7 +101,7 @@ namespace Task1
           xNew = xStart - Function(xStart) / Derivative(section.Item1);
           counter++;
         }
-        answers.Add((section.Item1, counter, xNew, Math.Abs(xStart - xNew), Function(xNew)));
+        answers.Add((section.Item1, counter, xNew, Math.Abs(xStart - xNew), Math.Abs(Function(xNew))));
       }
       return answers;
     }
@@ -119,7 +121,7 @@ namespace Task1
           xStart = temp;
           counter++;
         }
-        answers.Add((section.Item1, counter, xNew, Math.Abs(xStart - xNew), Function(xNew)));
+        answers.Add((section.Item1, counter, xNew, Math.Abs(xStart - xNew), Math.Abs(Function(xNew))));
       }
       return answers;
     }
@@ -164,7 +166,7 @@ namespace Task1
 
       Console.WriteLine();
       Console.WriteLine("Results of Newton`s method:");
-      Print(NewtonMethod(sections));
+      //Print(NewtonMethod(sections));
 
       Console.WriteLine();
       Console.WriteLine("Results of modified Newton`s method:");

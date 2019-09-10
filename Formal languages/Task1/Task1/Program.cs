@@ -26,11 +26,7 @@ namespace Task1
           currentSum += j;
         }
 
-        if (currentSum == number)
-        {
-          Console.WriteLine("i = 1, j = " + j);
-        }
-        else
+        if (currentSum != number)
         {
           while (number < currentSum)
           {
@@ -38,8 +34,8 @@ namespace Task1
             ++i;
             --j;
           }
-          Console.WriteLine("i = " + i + ", j = " + j);
         }
+        Console.WriteLine("i = " + i + ", j = " + j);
       }
     }
   }

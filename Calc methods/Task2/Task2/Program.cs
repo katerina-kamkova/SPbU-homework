@@ -8,7 +8,6 @@ namespace Task2
   {
     public const double a = 0;
     public const double b = 1;
-    public const double y = 0.65;
     public const int m = 15;
     public static List<(double, double)> table = new List<(double, double)>();
 
@@ -88,9 +87,9 @@ namespace Task2
       Console.WriteLine("Hi! This is LabWork 2: Algebraic interpolation problem");
       Console.WriteLine();
       Console.WriteLine("Variant 7");
-      Console.WriteLine("Parameters: f(x) = exp(-x) - x^2 / 2,   [a, b] = [0, 1], m = 15");
+      Console.WriteLine("Parameters: f(x) = exp(-x) - x^2 / 2,   [a, b] = [0, 1],   m = 15");
       Console.WriteLine();
-      Console.Write("Choose the way of creating the source table (1 - random, 2 - optimal): ");
+      Console.Write("Choose the way of creating the source table (1 - random, 2 - equidistant): ");
 
       while (true)
       {
@@ -111,7 +110,7 @@ namespace Task2
       {
         if (sourceTableType == 1)
         {
-          var temp = rand.NextDouble();
+          var temp = a + rand.NextDouble() * (b - a);
           table.Add((temp, Function(temp)));
         }
         else
@@ -119,7 +118,7 @@ namespace Task2
           double temp = a + i * (b - a) / m;
           table.Add((temp, Function(temp)));
         }
-          Console.WriteLine($"f({table.Last().Item1}) = {table.Last().Item2}");
+          Console.WriteLine($"{i + 1}. f({table.Last().Item1}) = {table.Last().Item2}");
       }
 
       while (goOn)
@@ -128,21 +127,14 @@ namespace Task2
         Console.WriteLine();
         while (true)
         {
-          if (sourceTableType == 2)
-          {
-            Console.WriteLine("You chose the second type, so n must be equal m - 1");
-            n = m - 1;
-            break;
-          }
-
-          Console.Write("Enter degree of interpolation polynomial n: ");
+          Console.Write($"Enter degree of interpolation polynomial n, it must be <= {m - 1}: ");
           if (!int.TryParse(Console.ReadLine(), out n))
           {
             Console.Write("The degree of interpolation polynomial n must be a natural number, try again: ");
           }
           else if (n >= m)
           {
-            Console.Write("n must be < m, try again: ");
+            Console.Write($"n must be <= {m - 1}, try again: ");
           }
           else 
           {
@@ -164,6 +156,7 @@ namespace Task2
           }
           Console.WriteLine();
         }
+        Console.WriteLine();
 
         // Sort table according to x and print it
         Console.WriteLine("Sorted table:");
@@ -174,9 +167,11 @@ namespace Task2
           else return 1;
         });
 
+        var counter = 1;
         foreach (var element in table)
         {
-          Console.WriteLine($"f({element.Item1}) = {element.Item2}");
+          Console.WriteLine($"{counter}. f({element.Item1}) = {element.Item2}");
+          counter++;
         }
         Console.WriteLine();
 

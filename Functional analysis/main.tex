@@ -1,0 +1,90 @@
+\documentclass[12pt, letterpaper, twoside]{article}
+\usepackage{enumitem}
+\setlist{nolistsep}
+%Russian-specific packages
+%--------------------------------------
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+%--------------------------------------
+ 
+%Hyphenation rules
+%--------------------------------------
+\usepackage{hyphenat}
+\hyphenation{ма-те-ма-ти-ка вос-ста-нав-ли-вать}
+%--------------------------------------
+
+\usepackage{amssymb}
+\usepackage{amsmath}
+ 
+\begin{document}
+ 
+\begin{center}
+    {\LARGE Функциональный анализ}
+    \vspace*{1.5cm}
+    
+    {\Large Полные метрические пространства}
+\end{center}
+
+\noindent
+\textbf{Опр:} \((X, \rho)\) --- \textit{метрическое пространство}, если \(X\) --- множество,\\
+\(\rho: X \times X \rightarrow \mathbb{R}\) --- \textit{метрика}, и выполняются следующие условия:
+\begin{itemize}
+    \item \(\rho(x, y) \geq 0, \qquad  \forall x, y \in X\)
+    \item \(\rho(x, y) = 0 \enspace \Leftrightarrow \enspace x = y, \qquad  \forall x, y \in X\)
+    \item \(\rho(x, y) = \rho(y, x), \qquad  \forall x, y \in X\)
+    \item \(\rho(x, y) \leq \rho(x, z) + \rho(z, y), \qquad  \forall x, y, z \in X\)
+\end{itemize} 
+
+\vspace*{0.3cm}
+\noindent
+\textbf{Опр:} \(\{B_r(x)\}_{r>0}\) --- \textit{база топологии} (т.е. семейство открытых подмножеств, через которые любой элемент представим в виде их объединения), где \(B_r(x) = \{y \in X : \rho(x, y) < r\}\) --- \textit{открытый шар} \(,\enspace r > 0, \enspace x \in X\)
+  
+\vspace*{0.3cm}
+\noindent
+\textbf{Опр:} \(U\) --- \textit{открытое} множество, если \(\forall x \in U \enspace \exists r > 0: B_r(x) \subset U\)
+
+\vspace*{0.3cm}
+\noindent
+\textbf{Опр:} \(\{B_{r_n} (x)\}_{r_n \in \mathbb{Q}}\) --- \textit{счётная} база в \(X\)
+
+\vspace*{0.3cm}
+\noindent
+\textbf{Опр:} \(A \subset X, \enspace A\) --- \textit{замкнутое} \enspace \Leftrightarrow \enspace \(X \smallsetminus A\) --- открытое (или \(\enspace \forall \enspace \{x_n\}^\infty _{n = 1} : \enspace x_n \in A \enspace \exists \lim_{n \rightarrow \infty} x_n = x_0 \Rightarrow x_0 \in A\))
+
+\vspace*{0.3cm}
+\noindent
+\textbf{Опр:} \(D_r(x) = \{y \in X: \rho (x, y) \leq r \}\) --- \textit{замкнутый круг}
+    
+\vspace*{0.4cm}
+\noindent
+\[\lim_{n \rightarrow \infty} x_n = x_0 \enspace \Leftrightarrow \enspace \lim_{n \rightarrow \infty} \rho (x_n, x_0) = 0\]
+
+\vspace*{0.3cm}
+\noindent
+\textbf{Опр:} \(\{x_n\}^{\infty}_{n = 1}\) --- \textit{фундаментальная последовательность} в \(X\), если \(\forall \epsilon > 0 \enspace \exists N \in \mathbb{N} : n, m > N \Rightarrow \rho (x_n, x_m) < \epsilon\) 
+    
+\vspace*{0.3cm}
+\noindent
+\textbf{Свойство:} \((x, \rho)\) --- метрическое пр-во, \(\{x_n\}^{\infty}_{n = 1}, \enspace x_n \in X\) \\
+\(\exists \lim_{n \rightarrow \infty} x_n = a \enspace \Rightarrow \enspace \{x_n\}^{\infty}_{n = 1}\) --- фундаментальная последовательность
+
+\vspace*{0.3cm}
+\noindent
+\textbf{Опр:} \((X, \rho)\) --- метр. пр-во, \(X\) --- \textit{полное}, если \(\forall \enspace \{x_n\}\) --- фунд. \(\enspace \Rightarrow \enspace \exists \lim_{n \rightarrow \infty} x_n = a \in X\)
+
+\vspace*{0.3cm}
+\noindent
+\textbf{Опр:} \(A \in X, (X, \rho), A\) --- \textit{ограниченное}, если \(\exists x_0 \in X, R > 0: A \subset B_R(x_0)\)
+
+\vspace*{0.3cm}
+\noindent
+\textbf{Теорема} (св-ва фунд. посл-ти): \\
+\((X, \rho)\) --- метрическое пр-во, \(\{x_n\}^{\infty}_{n = 1}\) --- фунд. пос-ть \(\Rightarrow\)
+\begin{enumerate}
+    \item \(\{x_n\}^{\infty}_{n = 1}\) --- ограниченная, т. е. \(\exists a \in X, R > 0 : x_n \in B_R(a) \enspace \forall n \in \mathbb{N}\)
+    \item \(\exists \{x_{n_k}\}^{\infty}_{k = 1}\) --- подп-ть \(\{x_n\}^{\infty}_{n = 1}: \exists \lim_{k \rightarrow \infty} x_{n_k} = a \enspace \Rightarrow \enspace \lim_{n \rightarrow \infty} x_n = a\)
+    \item \(\{\epsilon_k\}^{\infty}_{k = 0}, \epsilon > 0 \enspace \Rightarrow \enspace \exists\) подпос-ть \(\{x_{n_k}\}: \forall j > k \in \mathbb{N} \enspace \rho (x_{n_k}, x_{n_j}) < \epsilon\)
+\end{enumerate}
+    
+\end{document}

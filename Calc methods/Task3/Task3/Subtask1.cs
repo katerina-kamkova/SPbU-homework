@@ -68,9 +68,6 @@ namespace Task3
       }
       Console.WriteLine();
 
-      var ffirst = MathFunctions.GetLagrangePolynom(n, sourceTable);
-      var ssecond = MathFunctions.GetLagrangePolynom2(n, sourceTable);
-
       answers = new List<double> { MathFunctions.CountLagrangePolynom(MathFunctions.GetLagrangePolynom(n, sourceTable), F) };
     }
 

@@ -13,15 +13,17 @@ namespace Task3
       return Math.Pow(Math.E, -x) - Math.Pow(x, 2) / 2;
     }
 
-    public static List<(double, double)> Split(int stepNumber, double A, double B, double[] polynom)
+    public static List<(double, double)> Split(int stepNumber, double A, double B, double[] polynom, List<(double, double)> table, int n)
     {
       var step = (B - A) / stepNumber;
 
       var sections = new List<(double, double)>();
       for (double left = A, right = A + step; right <= B; left += step, right += step)
       {
-        var fLeft = CountLagrangePolynom(polynom, left);
-        var fRight = CountLagrangePolynom(polynom, right);
+        //var fLeft = CountLagrangePolynom(polynom, left);
+        //var fRight = CountLagrangePolynom(polynom, right);
+        var fLeft = Lagrange(left, n, table);
+        var fRight = Lagrange(right, n, table);
         if (fLeft * fRight <= 0)
         {
           sections.Add((left, right));
@@ -30,9 +32,9 @@ namespace Task3
       return sections;
     }
 
-    public static List<double> BisectionMethod(List<(double, double)> sections, double[] polynom, double E)
+    public static List<(double, int, double, double, double)> BisectionMethod(List<(double, double)> sections, double E, List<(double, double)> table, int n)
     {
-      var answers = new List<double>();
+      var answers = new List<(double, int, double, double, double)>();
       foreach (var section in sections)
       {
         var (a, b) = section;
@@ -40,7 +42,7 @@ namespace Task3
         while (b - a > 2 * E)
         {
           var c = (a + b) / 2;
-          if (CountLagrangePolynom(polynom, a) * CountLagrangePolynom(polynom, c) <= 0)
+          if (Lagrange(a, n, table) * Lagrange(c, n, table) <= 0)
           {
             b = c;
           }
@@ -50,7 +52,7 @@ namespace Task3
           }
           counter++;
         }
-        answers.Add((a + b) / 2);
+        answers.Add(((section.Item2 + section.Item1) / 2, counter, (a + b) / 2, b - a, Math.Abs(Function((a + b) / 2))));
       }
       return answers;
     }
@@ -156,6 +158,25 @@ namespace Task3
       for (var i = 0; i < length; i++)
       {
         answer += polynom[i] * Math.Pow(x, length - i);
+      }
+      return answer;
+    }
+
+    public static double Lagrange(double x, int n, List<(double, double)> table)
+    {
+      double answer = 0.0;
+      for (var i = 0; i <= n; i++)
+      {
+        double temp = 1.0;
+        for (var j = 0; j <= n; j++)
+        {
+          if (j != i)
+          {
+            var number = table[j].Item1;
+            temp = temp * (x - number) / (table[i].Item1 - number);
+          }
+        }
+        answer += temp * table[i].Item2;
       }
       return answer;
     }

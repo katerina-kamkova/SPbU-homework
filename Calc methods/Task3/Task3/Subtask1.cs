@@ -68,7 +68,9 @@ namespace Task3
       }
       Console.WriteLine();
 
-      answers = new List<double> { MathFunctions.CountLagrangePolynom(MathFunctions.GetLagrangePolynom(n, sourceTable), F) };
+      answers = new List<double> { MathFunctions.Lagrange(F, n, newTable) };
+      //Print();
+      //answers = new List<double> { MathFunctions.CountLagrangePolynom(MathFunctions.GetLagrangePolynom(n, newTable), F) };
     }
 
     private void Solve2()
@@ -79,12 +81,12 @@ namespace Task3
       var stepsNum = Tools.FillIntVariable("Enter the number of steps: ",
                                            number => number > 0,
                                            "It must be a natural number, try again: ");
-      var sections = MathFunctions.Split(stepsNum, a, b, polynom);
+      var sections = MathFunctions.Split(stepsNum, a, b, polynom, sourceTable, n);
 
       var E = Tools.FillDoubleVariable("Enter E: ",
                                        e => e > 0,
                                        "E must be a positive number, try again: ");
-      answers = MathFunctions.BisectionMethod(sections, polynom, E);
+      answers = MathFunctions.BisectionMethod(sections, E, sourceTable, n);
     }
 
     private void Print()

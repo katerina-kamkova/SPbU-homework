@@ -13,7 +13,7 @@ namespace Task3
       return Math.Pow(Math.E, -x) - Math.Pow(x, 2) / 2;
     }
 
-    public static List<(double, double)> Split(int stepNumber, double A, double B, double[] polynom, List<(double, double)> table, int n)
+    public static List<(double, double)> Split(int stepNumber, double A, double B, List<(double, double)> table, int n, double F)
     {
       var step = (B - A) / stepNumber;
 
@@ -22,8 +22,8 @@ namespace Task3
       {
         //var fLeft = CountLagrangePolynom(polynom, left);
         //var fRight = CountLagrangePolynom(polynom, right);
-        var fLeft = Lagrange(left, n, table);
-        var fRight = Lagrange(right, n, table);
+        var fLeft = Lagrange(left, n, table) - F;
+        var fRight = Lagrange(right, n, table) - F;
         if (fLeft * fRight <= 0)
         {
           sections.Add((left, right));
@@ -32,9 +32,9 @@ namespace Task3
       return sections;
     }
 
-    public static List<(double, int, double, double, double)> BisectionMethod(List<(double, double)> sections, double E, List<(double, double)> table, int n)
+    public static List<double> BisectionMethod(List<(double, double)> sections, double E, List<(double, double)> table, int n, double F)
     {
-      var answers = new List<(double, int, double, double, double)>();
+      var answers = new List<double>();
       foreach (var section in sections)
       {
         var (a, b) = section;
@@ -42,7 +42,7 @@ namespace Task3
         while (b - a > 2 * E)
         {
           var c = (a + b) / 2;
-          if (Lagrange(a, n, table) * Lagrange(c, n, table) <= 0)
+          if ((Lagrange(a, n, table) - F) * (Lagrange(c, n, table) - F) <= 0)
           {
             b = c;
           }
@@ -52,7 +52,7 @@ namespace Task3
           }
           counter++;
         }
-        answers.Add(((section.Item2 + section.Item1) / 2, counter, (a + b) / 2, b - a, Math.Abs(Function((a + b) / 2))));
+        answers.Add((a + b) / 2);
       }
       return answers;
     }

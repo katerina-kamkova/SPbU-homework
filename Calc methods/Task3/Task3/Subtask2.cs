@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Task3
 {
@@ -41,7 +39,7 @@ namespace Task3
                                 "You should enter a natural number, try again: ") - 1;
     }
 
-    private const int tableWidth = 170;
+    private const int tableWidth = 80;
 
     static void PrintLine()
     {
@@ -70,15 +68,15 @@ namespace Task3
         return new string(' ', width);
       }
       else
-      {
+{
         return text.PadRight(width - (width - text.Length) / 2).PadLeft(width);
       }
     }
 
     public void Solve()
     {
-      PrintRow(new string[6] { "x(i)", "f(x(i))", "f'(x(i))nd", "|f'(x(i))t - f'(x(i))nd|", "f''(x(i))nd", "|f''(x(i))t - f''(x(i))nd|" });
-      PrintLine();
+      var list = new List<string[]>();
+      list.Add(new string[6] { "x(i)", "f(x(i))", "f'(x(i))nd", "|f'(x(i))t - f'(x(i))nd|", "f''(x(i))nd", "|f''(x(i))t - f''(x(i))nd|" });
 
       var sourceTable = new List<(double, double, double)>(); // x, f(x), f'(x)
       for (var i = 0; i <= m; i++)
@@ -115,7 +113,7 @@ namespace Task3
                                     Convert.ToString(Math.Abs(der - Derivative(x))),
                                     "",
                                     ""};
-          PrintRow(str);
+          list.Add(str);
         }
         else
         {
@@ -125,9 +123,35 @@ namespace Task3
                                     Convert.ToString(Math.Abs(der - Derivative(x))),
                                     Convert.ToString(der2),
                                     Convert.ToString(Math.Abs(der2 - Derivative2(x)))};
-          PrintRow(str);
+          list.Add(str);
         }
       }
+
+      PrintRow(list[0].Take(2).ToArray());
+      PrintLine();
+      for (var i = 1; i < list.Count; i++)
+      {
+        PrintRow(list[i].Take(2).ToArray());
+      }
+
+      Console.WriteLine();
+
+      PrintRow(list[0].Skip(2).Take(2).ToArray());
+      PrintLine();
+      for (var i = 1; i < list.Count; i++)
+      {
+        PrintRow(list[i].Skip(2).Take(2).ToArray());
+      }
+
+      Console.WriteLine();
+
+      PrintRow(list[0].Skip(4).ToArray());
+      PrintLine();
+      for (var i = 1; i < list.Count; i++)
+      {
+        PrintRow(list[i].Skip(4).ToArray());
+      }
+
       Console.WriteLine();
     }
   }

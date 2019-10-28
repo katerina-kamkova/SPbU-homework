@@ -75,18 +75,16 @@ namespace Task3
 
     private void Solve2()
     {
-      var polynom = MathFunctions.GetLagrangePolynom(n, sourceTable);
-      polynom[n] -= F;
-
       var stepsNum = Tools.FillIntVariable("Enter the number of steps: ",
                                            number => number > 0,
                                            "It must be a natural number, try again: ");
-      var sections = MathFunctions.Split(stepsNum, a, b, polynom, sourceTable, n);
+      var sections = MathFunctions.Split(stepsNum, a, b, sourceTable, n, F);
 
       var E = Tools.FillDoubleVariable("Enter E: ",
                                        e => e > 0,
                                        "E must be a positive number, try again: ");
-      answers = MathFunctions.BisectionMethod(sections, E, sourceTable, n);
+      Console.WriteLine();
+      answers = MathFunctions.BisectionMethod(sections, E, sourceTable, n, F);
     }
 
     private void Print()

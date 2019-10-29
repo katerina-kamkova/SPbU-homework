@@ -45,9 +45,34 @@ namespace Task4
       return 1.0;
     }
 
-    public static double fFunc(double x)
+    public static double fFuncExp(double x)
     {
       return Math.Exp(x * 2);
+    }
+
+    public static double fFuncConst(double x)
+    {
+      return 3.0;
+    }
+
+    public static double fFuncPolynom1(double x)
+    {
+      return x;
+    }
+
+    public static double fFuncPolynom2(double x)
+    {
+      return x * x - 3.0 * x + 12.0;
+    }
+
+    public static double fFuncPolynom3(double x)
+    {
+      return x * x * x * 2 - 4.0 * x * x - 2.0 * x + 10.0;
+    }
+
+    public static double fFuncPolynom4(double x)
+    {
+      return Math.Pow(x, 4) + Math.Pow(x, 2) * 3.0;
     }
 
     public static double Counted()
@@ -80,7 +105,7 @@ namespace Task4
       double answer = 0.0;
       for (var i = 0; i < m; i++)
       {
-        answer += fFunc(A + i * h);
+        answer += fFuncExp(A + i * h);
       }
       J_h = answer * h;
       Console.WriteLine($"Left rectangle J(h) = {J_h}");
@@ -90,7 +115,7 @@ namespace Task4
       answer = 0.0;
       for (var i = 0; i < m; i++)
       {
-        answer += fFunc(A + (i + 1) * h);
+        answer += fFuncExp(A + (i + 1) * h);
       }
       J_h = answer * h;
       Console.WriteLine($"Right rectangle J(h) = {answer * h}");
@@ -100,7 +125,7 @@ namespace Task4
       answer = 0.0;
       for (var i = 0; i < m; i++)
       {
-        answer += fFunc(A + i * h + h / 2);
+        answer += fFuncExp(A + i * h + h / 2);
       }
       J_h = answer * h;
       Console.WriteLine($"Middle rectangle J(h) = {answer * h}");
@@ -110,10 +135,10 @@ namespace Task4
       answer = 0.0;
       for (var i = 1; i < m; i++)
       {
-        answer += fFunc(A + i * h);
+        answer += fFuncExp(A + i * h);
       }
-      J_h = ((fFunc(A) + fFunc(B)) / 2 + answer) * h;
-      Console.WriteLine($"Trapeze J(h) = {((fFunc(A) + fFunc(B)) / 2 + answer) * h}");
+      J_h = ((fFuncExp(A) + fFuncExp(B)) / 2 + answer) * h;
+      Console.WriteLine($"Trapeze J(h) = {((fFuncExp(A) + fFuncExp(B)) / 2 + answer) * h}");
       Console.WriteLine($"|J - J(h)| = {Math.Abs(J - J_h)}");
       Console.WriteLine();
 
@@ -123,16 +148,16 @@ namespace Task4
       {
         if (i % 2 == 0)
         {
-          answer1 += fFunc(A + i * h);
+          answer1 += fFuncExp(A + i * h);
         }
         else
         {
-          answer += fFunc(A + i * h);
+          answer += fFuncExp(A + i * h);
         }
       }
-      J_h = (fFunc(A) + fFunc(B) + 4 * answer + 2 * answer1) * h / 6;
-      Console.WriteLine($"Simpson's formula J(h) = {(fFunc(A) + fFunc(B) + 4 * answer + 2 * answer1) * h / 6}");
-      Console.WriteLine($"|J - J(h)| = {Math.Abs(J - ((fFunc(A) + fFunc(B) + 4 * answer + 2 * answer1) * h / 6))}");
+      J_h = (fFuncExp(A) + fFuncExp(B) + 4 * answer + 2 * answer1) * h / 6;
+      Console.WriteLine($"Simpson's formula J(h) = {(fFuncExp(A) + fFuncExp(B) + 4 * answer + 2 * answer1) * h / 6}");
+      Console.WriteLine($"|J - J(h)| = {Math.Abs(J - ((fFuncExp(A) + fFuncExp(B) + 4 * answer + 2 * answer1) * h / 6))}");
     }
   }
 }

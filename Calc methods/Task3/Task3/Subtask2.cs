@@ -10,6 +10,8 @@ namespace Task3
     private double a;
     private double b;
     private int m;
+        private double h;
+        private int numberPoints;
 
     private double function(double x)
     {
@@ -31,15 +33,20 @@ namespace Task3
       a = Tools.FillDoubleVariable("Enter a - left edge of the sector: ",
                                    number => true,
                                    "You should enter a number, try again: ");
-      b = Tools.FillDoubleVariable("Enter b - right edge of the sector: ",
+      /*b = Tools.FillDoubleVariable("Enter b - right edge of the sector: ",
                                    number => number > a,
-                                   $"You should enter a number bigger then {a}, try again: ");
+                                   $"You should enter a number bigger then {a}, try again: ");*/
       m = Tools.FillIntVariable("Enter the number of values in the table: ",
                                 number => number > 0,
                                 "You should enter a natural number, try again: ") - 1;
-    }
+      h = Tools.FillDoubleVariable("Enter h: ",
+                                   number => number > 0,
+                                   "You should enter a natural number, try again: ");
+      b = a + h * m;
 
-    private const int tableWidth = 80;
+      }
+
+        private const int tableWidth = 80;
 
     static void PrintLine()
     {
@@ -85,7 +92,7 @@ namespace Task3
         sourceTable.Add((temp, function(temp), Derivative(temp)));
       }
 
-      double h = (b - a) / m;
+      //double h = (b - a) / m;
       for (var i = 0; i <= m; i++)
       {
         var x = sourceTable[i].Item1;

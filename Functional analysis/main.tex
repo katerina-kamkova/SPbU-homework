@@ -16,6 +16,7 @@
 
 \usepackage{amssymb}
 \usepackage{amsmath}
+\usepackage{latexsym}
  
 \begin{document}
  
@@ -86,5 +87,70 @@
     \item \(\exists \{x_{n_k}\}^{\infty}_{k = 1}\) --- подп-ть \(\{x_n\}^{\infty}_{n = 1}: \exists \lim_{k \rightarrow \infty} x_{n_k} = a \enspace \Rightarrow \enspace \lim_{n \rightarrow \infty} x_n = a\)
     \item \(\{\epsilon_k\}^{\infty}_{k = 0}, \epsilon > 0 \enspace \Rightarrow \enspace \exists\) подпос-ть \(\{x_{n_k}\}: \forall j > k \in \mathbb{N} \enspace \rho (x_{n_k}, x_{n_j}) < \epsilon\)
 \end{enumerate}
+
+\begin{center}
+    \vspace*{1.5cm}
+    {\Large Б\.aнаховы пространства}
+\end{center}
+
+\noindent
+\textbf{Опр:} \(X\) --- линейное пр-во над полем \(k \ (k = \mathbb{R} \ || \ k = \mathbb{C})\); \enspace \(p: X \rightarrow \mathbb{R}, \\ p\) --- \textit{полунорма}, если:
+\begin{enumerate}
+    \item \(p(x + y) \leq p(x) + p(y), \qquad \forall x, y \in X\)
+    \item \(p(\lambda x) = |\lambda| p(x), \qquad \forall x \in X, \lambda \in k \)
+\end{enumerate}
+
+\vspace*{0.3cm}
+\noindent
+\textbf{Свойство} (полунормы): \\
+\(X\) --- лин. пр-во, \(p\) --- полунорма \ \Rightarrow \ \(p(\mathbb{O}) = 0, \ p(x) = p(-x), \ p(x) \geq 0 \enspace \forall x \in X\)
+
+\vspace*{0.3cm}
+\noindent
+\textbf{Опр:} \(X\) --- лин. пр-во над \(k\), \ \(p\) --- \textit{норма}, если \(p(x) = 0 \ \Leftrightarrow \ x = \mathbb{O} \ \in X \)
+
+\vspace*{0.3cm}
+\noindent
+\textbf{Опр:} \( (X, || \cdot ||) \) --- \textit{нормированное} пр-во; \(\rho(x, y) := ||x - y||\); \ (аксиомы нормы \( \ \Rightarrow \ \) аксиомы метрики)
+
+\vspace*{0.3cm}
+\noindent
+\textbf{Опр:} \( (X, || \cdot ||) \) --- \textit{банахово} пр-во, если \( (X, \rho) \) --- полное
+
+\vspace*{0.3cm}
+\noindent
+\textbf{Опр:} 
+\begin{enumerate}
+    \item \(X\) --- лин. пр-во над \(k \ (k = \mathbb{R} \ || \ k = \mathbb{C})\); \ \(L \subset X\), \(L\) --- подпространство \textit{в алгебраическом смысле}, если \(L\) --- лин. подпр-во над \(k\), т.е. \( \forall \ \alpha, \beta \in k, \ x, y \in L \ \Rightarrow \ \alpha x + \beta y \in L \)
+    \item \( (X, || \cdot ||) \) --- лин. нормир. пр-во, \( L \subset X, L \) --- \textit{подпространство}, если \(L\) --- подпр-во в алгебр. смысле и замкнуто 
+\end{enumerate}
+
+\vspace*{0.3cm}
+\noindent
+\textbf{Опр:} \( (X, || \cdot ||), \enspace \{x_k\}^{\infty}_{k = 1}, \enspace x_k \in X, \enspace S_n = \sum_{k=1}^n x_k \)
+\vspace*{0.1cm}
+\begin{enumerate}
+    \item \( \sum_{k=1}^\infty x_k \) --- \textit{сходится}, если \( \exists \lim_{n \rightarrow \infty} S_n = S, \enspace S \in X, S = \sum_{k=1}^\infty x_k \)
+    \vspace*{0.1cm}
+    \item \( \sum_{k=1}^\infty x_k \) --- \textit{сходится абсолютно}, если \( \sum_{k=1}^\infty ||x_k|| \) --- сходится
+\end{enumerate}
+
+\vspace*{0.3cm}
+\noindent
+\textbf{Теорема} (Критерий полноты нормированного пространства): \\
+\( (X, || \cdot ||), \ X \) --- полное \( \enspace \Leftrightarrow \enspace \) из абсолютной сходимости \( \ \Rightarrow \ \) сходимость
+
+\begin{center}
+    \vspace*{1.5cm}
+    {\Large Пространство ограниченных функций}
+\end{center}
+
+\vspace*{0.3cm}
+\noindent
+\textbf{Опр:} \(A\) --- мн-во, \( \ m(A) = \{ f: A \rightarrow \mathbb{R} (|| \ \mathbb{C}) \ | \ f \) --- огр. (т.е. \( \sup_{x \in A} |f(x)| \leq + \infty) \} \) --- мн-во всех ограниченных ф-ий на \(A\); \( ||f||_{\infty} = sup_{x \in A} |f(x)| \)
+
+\vspace*{0.3cm}
+\noindent
+\textbf{Теорема:} \( m(A) \) --- банахово пр-во
     
 \end{document}

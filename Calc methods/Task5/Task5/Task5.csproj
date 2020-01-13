@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{E31C17B0-5C6A-41CF-B79A-65273BBB3D18}</ProjectGuid>
+        <OutputType>Exe</OutputType>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <RootNamespace>Task5</RootNamespace>
+        <AssemblyName>Task5</AssemblyName>
+        <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\Debug\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\Release\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+          <HintPath>..\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="MigraDoc.DocumentObjectModel-gdi, Version=1.50.5147.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb">
+          <HintPath>..\packages\PDFsharp-MigraDoc-gdi.1.50.5147\lib\net20\MigraDoc.DocumentObjectModel-gdi.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="MigraDoc.Rendering-gdi, Version=1.50.5147.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb">
+          <HintPath>..\packages\PDFsharp-MigraDoc-gdi.1.50.5147\lib\net20\MigraDoc.Rendering-gdi.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="MigraDoc.RtfRendering-gdi, Version=1.50.5147.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb">
+          <HintPath>..\packages\PDFsharp-MigraDoc-gdi.1.50.5147\lib\net20\MigraDoc.RtfRendering-gdi.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="mscorlib" />
+        <Reference Include="OxyPlot, Version=2.0.0.0, Culture=neutral, PublicKeyToken=638079a8f0bd61e9">
+          <HintPath>..\packages\OxyPlot.Core.2.0.0\lib\net45\OxyPlot.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="OxyPlot.Core.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null">
+          <HintPath>..\packages\OxyPlot.Core.Drawing.2.0.0\lib\netstandard2.0\OxyPlot.Core.Drawing.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="OxyPlot.Pdf, Version=2.0.0.0, Culture=neutral, PublicKeyToken=c167629db8cf8ad9">
+          <HintPath>..\packages\OxyPlot.Pdf.2.0.0\lib\net452\OxyPlot.Pdf.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="PdfSharp-gdi, Version=1.50.5147.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb">
+          <HintPath>..\packages\PDFsharp-MigraDoc-gdi.1.50.5147\lib\net20\PdfSharp-gdi.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="PdfSharp.Charting-gdi, Version=1.50.5147.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb">
+          <HintPath>..\packages\PDFsharp-MigraDoc-gdi.1.50.5147\lib\net20\PdfSharp.Charting-gdi.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="ReachFramework" />
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.Data" />
+        <Reference Include="System.Drawing" />
+        <Reference Include="System.Drawing.Common, Version=4.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+          <HintPath>..\packages\System.Drawing.Common.4.6.0\lib\net461\System.Drawing.Common.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="System.Printing" />
+        <Reference Include="System.Xml" />
+        <Reference Include="System.Xml.Linq" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="ChPolynom.cs" />
+        <Compile Include="HPolynom.cs" />
+        <Compile Include="LagPolynom.cs" />
+        <Compile Include="LPolynom.cs" />
+        <Compile Include="Program.cs" />
+        <Compile Include="Properties\AssemblyInfo.cs" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Include="packages.config" />
+    </ItemGroup>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+         Other similar extension points exist, see Microsoft.Common.targets.
+    <Target Name="BeforeBuild">
+    </Target>
+    <Target Name="AfterBuild">
+    </Target>
+    -->
+
+</Project>

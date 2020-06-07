@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ntpClient", "ntpClient\ntpClient.csproj", "{50675A40-5F50-423D-96A2-12EACA6E415E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{50675A40-5F50-423D-96A2-12EACA6E415E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50675A40-5F50-423D-96A2-12EACA6E415E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50675A40-5F50-423D-96A2-12EACA6E415E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50675A40-5F50-423D-96A2-12EACA6E415E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

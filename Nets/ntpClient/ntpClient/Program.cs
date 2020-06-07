@@ -57,7 +57,7 @@ namespace ntpClient
             GetTime();
             GetTime();
             watch.Stop();
-            var delay = watch.ElapsedMilliseconds / 5;
+            var delay = watch.ElapsedMilliseconds / 10;
             
             while (true)
             {
